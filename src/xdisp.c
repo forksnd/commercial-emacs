@@ -15752,7 +15752,7 @@ move_cursor (struct window *w, struct glyph_row *row,
 		  str = glyph->object;
 		  tem = string_buffer_position_lim (str, pos, lim, false);
 		  bool overlay_seen = (tem == 0);
-		  if (overlay_seen || pos <= tem)
+		  if (overlay_seen || pos <= tem) /* overlay or display string */
 		    {
 		      if (tem == pt_row /* in buffer at PT */
 			  || overlay_seen /* from overlay */
@@ -15808,12 +15808,10 @@ move_cursor (struct window *w, struct glyph_row *row,
 
 	  /* Kim Storm in a4f3f61 says "If cursor cannot be set in row
 	     [e.g., a continued before-string], don't update w->cursor
-	     and return 0. */
+	     and return false.  */
 	  if (cursor == NULL
-	      && row->reversed_p ? glyph <= end : glyph >= end
-	      && row->reversed_p ? end > orig_end : end < orig_end
-	      && STRINGP (end->object)
-	      && row->continued_p)
+	      && row->continued_p
+	      && (row->reversed_p ? glyph <= end : glyph >= end))
 	    return false;
 	}
       /* A truncated row may not include PT among its character positions.
